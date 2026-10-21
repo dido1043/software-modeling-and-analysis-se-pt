@@ -651,7 +651,7 @@ BEGIN
             p.HasAdvertising,
             CAST(CASE WHEN p.HasAdvertising = 1 THEN 'With Ads' ELSE 'Ad-Free' END AS VARCHAR(12)),
             p.IsActive, p.EffectiveFrom
-        FROM HBOMaxOLTP.acct.Plan AS p;
+        FROM HBOMaxOLTP.acct.[Plan] AS p;
 
         SELECT @RowsRead = COUNT(*) FROM etl.StgPlan;
 
@@ -1365,14 +1365,13 @@ GO
    -----------------------------------------------------------------------------
    Target     : dw.DimDevice                            Load type: SCD1 (MERGE)
    Source     : HBOMaxOLTP.acct.Device
-   Derived    : FormFactor collapses the six OLTP DeviceType values into the four
-                buckets the device-mix report slices on:
-                  'TV / Big Screen' <- SmartTV, Console, StreamStick
+   Derived    : FormFactor collapses the eight OLTP DeviceType values into the
+                four buckets the device-mix report slices on:
+                  'TV / Big Screen' <- SmartTV, Console, StreamingBox
                   'Handheld'        <- Mobile
                   'Tablet'          <- Tablet
-                  'Computer'        <- Desktop
-                Anything else maps to 'Unknown', which is also the only other
-                value CK_DimDevice_Form permits.
+                  'Computer'        <- Laptop, Desktop, Browser
+                Anything else maps to 'Unknown'.
    Note       : acct.Device.OperatingSystem is nullable but dw.DimDevice declares
                 it NOT NULL, so it is coalesced to N'Unknown'.
    ============================================================================= */
@@ -1406,11 +1405,11 @@ BEGIN
         (
             SELECT
                 d.DeviceID, d.SubscriberID, d.DeviceType,
-                CAST(CASE WHEN d.DeviceType IN ('SmartTV', 'Console', 'StreamStick')
+                CAST(CASE WHEN d.DeviceType IN ('SmartTV', 'Console', 'StreamingBox')
                                THEN 'TV / Big Screen'
                           WHEN d.DeviceType = 'Mobile'  THEN 'Handheld'
                           WHEN d.DeviceType = 'Tablet'  THEN 'Tablet'
-                          WHEN d.DeviceType = 'Desktop' THEN 'Computer'
+                          WHEN d.DeviceType IN ('Laptop', 'Desktop', 'Browser') THEN 'Computer'
                           ELSE 'Unknown' END AS VARCHAR(16))        AS FormFactor,
                 d.Manufacturer, d.ModelName,
                 CAST(ISNULL(d.OperatingSystem, N'Unknown') AS NVARCHAR(40)) AS OperatingSystem,
@@ -1482,8 +1481,9 @@ GO
    Source     : HBOMaxOLTP.bill.PaymentMethod joined to geo.Country for the
                 billing territory.
    Derived    : MethodCategory - 'Card'    <- CreditCard, DebitCard
-                                 'Wallet'  <- PayPal, ApplePay, GooglePay
+                                 'Wallet'  <- PayPal, AppleIAP, GoogleIAP
                                  'Prepaid' <- GiftCard
+                                 'Bank'    <- BankTransfer
                                  'Unknown' otherwise.
    Privacy    : only CardBrand and Last4Digits are carried over; no PAN, no
                 expiry pairing, no postal code.
@@ -1520,8 +1520,9 @@ BEGIN
             SELECT
                 pm.PaymentMethodID, pm.SubscriberID, pm.MethodType,
                 CAST(CASE WHEN pm.MethodType IN ('CreditCard', 'DebitCard')        THEN 'Card'
-                          WHEN pm.MethodType IN ('PayPal', 'ApplePay', 'GooglePay') THEN 'Wallet'
+                          WHEN pm.MethodType IN ('PayPal', 'AppleIAP', 'GoogleIAP') THEN 'Wallet'
                           WHEN pm.MethodType = 'GiftCard'                           THEN 'Prepaid'
+                          WHEN pm.MethodType = 'BankTransfer'                       THEN 'Bank'
                           ELSE 'Unknown' END AS VARCHAR(8))             AS MethodCategory,
                 CAST(ISNULL(pm.CardBrand, 'N/A') AS VARCHAR(20))        AS CardBrand,
                 pm.Last4Digits, pm.BillingCountryID,

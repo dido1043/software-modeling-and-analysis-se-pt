@@ -38,9 +38,9 @@ CREATE INDEX IX_Subscriber_Status          ON acct.Subscriber   (AccountStatus) 
 CREATE INDEX IX_Sub_Subscriber             ON acct.Subscription (SubscriberID);
 CREATE INDEX IX_Sub_Plan                   ON acct.Subscription (PlanID);
 CREATE INDEX IX_Sub_Status_ActiveOnly      ON acct.Subscription (SubscriptionStatus, PlanID) WHERE EndDate IS NULL;
-CREATE INDEX IX_SubChg_Sub                 ON acct.SubscriptionChangeLog (SubscriptionID, ChangedAt);
-CREATE INDEX IX_SubChg_OldPlan             ON acct.SubscriptionChangeLog (OldPlanID);
-CREATE INDEX IX_SubChg_NewPlan             ON acct.SubscriptionChangeLog (NewPlanID);
+CREATE INDEX IX_SubChg_Sub                 ON audit.SubscriptionChangeLog (SubscriptionID, ChangedAt);
+CREATE INDEX IX_SubChg_OldPlan             ON audit.SubscriptionChangeLog (OldPlanID);
+CREATE INDEX IX_SubChg_NewPlan             ON audit.SubscriptionChangeLog (NewPlanID);
 CREATE INDEX IX_Profile_Subscriber         ON acct.Profile      (SubscriberID);
 CREATE INDEX IX_Profile_Language           ON acct.Profile      (PreferredLanguageID);
 CREATE INDEX IX_Device_Subscriber          ON acct.Device       (SubscriberID);

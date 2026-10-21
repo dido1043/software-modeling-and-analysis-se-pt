@@ -1,0 +1,237 @@
+// =============================================================================
+// HBO Max - Software Modeling and Analysis course work
+// File:    measures.dax
+// Purpose: Optional DAX measure library for the star-schema model of HBOMaxDW
+//          (docs/POWER_BI_REPORT.md, step 6).
+//
+// Model assumptions
+//   - The 10 dw.Dim* and 5 dw.Fact* tables are imported and renamed without the
+//     "dw " prefix (FactViewingSession, DimDate, ...).
+//   - One-to-many, single-direction relationships from every dimension key to
+//     the matching fact key. Active date relationships:
+//         FactViewingSession[DateKey]                       -> DimDate[DateKey]
+//         FactRevenue[PaymentDateKey]                       -> DimDate[DateKey]
+//         FactTitleRating[DateKey]                          -> DimDate[DateKey]
+//         FactSubscriptionMonthlySnapshot[SnapshotDateKey]  -> DimDate[DateKey]
+//         FactCatalogAvailabilitySnapshot[SnapshotDateKey]  -> DimDate[DateKey]
+//     The other role-playing date keys stay INACTIVE and are used through
+//     USERELATIONSHIP where needed.
+//   - DimDate is marked as the date table on DimDate[FullDate].
+//   - The -1 Unknown members are kept in the model; the measures below do not
+//     need to exclude them, because a -1 row only ever carries real measures.
+//
+// Paste each section into the home table named in its header.
+// =============================================================================
+
+
+// -----------------------------------------------------------------------------
+// Home table: FactViewingSession
+// -----------------------------------------------------------------------------
+Total Hours Watched =
+    SUM ( FactViewingSession[HoursWatched] )
+
+Sessions =
+    SUM ( FactViewingSession[SessionCount] )
+
+Unique Viewers =
+    DISTINCTCOUNT ( FactViewingSession[ProfileKey] )
+
+Active Subscribers (Viewing) =
+    // SCD Type 2: count the natural key, never the surrogate key
+    CALCULATE (
+        DISTINCTCOUNT ( DimSubscriber[SubscriberID] ),
+        FactViewingSession
+    )
+
+Hours per Viewer =
+    DIVIDE ( [Total Hours Watched], [Unique Viewers] )
+
+Completion Rate =
+    DIVIDE ( SUM ( FactViewingSession[IsCompletedFlag] ), [Sessions] )
+
+Binge Session Share =
+    DIVIDE ( SUM ( FactViewingSession[IsBingeSession] ), [Sessions] )
+
+Buffering Events per Hour =
+    DIVIDE ( SUM ( FactViewingSession[BufferingEvents] ), [Total Hours Watched] )
+
+Prime Time Share =
+    DIVIDE (
+        CALCULATE ( [Total Hours Watched], DimTimeOfDay[IsPrimeTime] = TRUE () ),
+        [Total Hours Watched]
+    )
+
+Hours Watched PY =
+    CALCULATE ( [Total Hours Watched], SAMEPERIODLASTYEAR ( DimDate[FullDate] ) )
+
+Hours Watched YoY % =
+    DIVIDE ( [Total Hours Watched] - [Hours Watched PY], [Hours Watched PY] )
+
+Hours Watched MTD =
+    TOTALMTD ( [Total Hours Watched], DimDate[FullDate] )
+
+Hours Watched Rolling 3M =
+    CALCULATE (
+        [Total Hours Watched],
+        DATESINPERIOD ( DimDate[FullDate], MAX ( DimDate[FullDate] ), -3, MONTH )
+    )
+
+
+// -----------------------------------------------------------------------------
+// Home table: FactRevenue
+// Revenue is in the currency of the plan - slice by DimPlan[CurrencyCode] or
+// filter one currency before adding amounts up.
+// -----------------------------------------------------------------------------
+Net Revenue =
+    SUM ( FactRevenue[NetRevenueAmount] )
+
+Gross Paid Amount =
+    SUM ( FactRevenue[PaidAmount] )
+
+Refunded Amount =
+    SUM ( FactRevenue[RefundedAmount] )
+
+Discount Given =
+    SUM ( FactRevenue[DiscountAmount] )
+
+Payment Attempts =
+    SUM ( FactRevenue[PaymentCount] )
+
+Payment Failure Rate =
+    DIVIDE ( SUM ( FactRevenue[FailedPaymentCount] ), [Payment Attempts] )
+
+Average Days to Pay =
+    AVERAGE ( FactRevenue[DaysToPay] )
+
+Net Revenue by Invoice Date =
+    CALCULATE (
+        [Net Revenue],
+        USERELATIONSHIP ( FactRevenue[InvoiceDateKey], DimDate[DateKey] )
+    )
+
+Net Revenue YTD =
+    TOTALYTD ( [Net Revenue], DimDate[FullDate] )
+
+Net Revenue PM =
+    CALCULATE ( [Net Revenue], DATEADD ( DimDate[FullDate], -1, MONTH ) )
+
+Net Revenue MoM % =
+    DIVIDE ( [Net Revenue] - [Net Revenue PM], [Net Revenue PM] )
+
+
+// -----------------------------------------------------------------------------
+// Home table: FactSubscriptionMonthlySnapshot
+// Semi-additive: never sum across months. Every measure takes the LAST month
+// in the current filter context.
+// -----------------------------------------------------------------------------
+Last Snapshot Date =
+    CALCULATE (
+        MAX ( DimDate[FullDate] ),
+        FactSubscriptionMonthlySnapshot
+    )
+
+Active Subscriptions =
+    CALCULATE (
+        SUM ( FactSubscriptionMonthlySnapshot[ActiveSubscriptionCount] ),
+        LASTNONBLANK (
+            DimDate[FullDate],
+            CALCULATE ( COUNTROWS ( FactSubscriptionMonthlySnapshot ) )
+        )
+    )
+
+Monthly Recurring Revenue =
+    CALCULATE (
+        SUM ( FactSubscriptionMonthlySnapshot[MonthlyRecurringRevenue] ),
+        LASTNONBLANK (
+            DimDate[FullDate],
+            CALCULATE ( COUNTROWS ( FactSubscriptionMonthlySnapshot ) )
+        )
+    )
+
+ARPU =
+    DIVIDE ( [Monthly Recurring Revenue], [Active Subscriptions] )
+
+New Subscriptions =
+    SUM ( FactSubscriptionMonthlySnapshot[IsNewThisMonth] )
+
+Churned Subscriptions =
+    SUM ( FactSubscriptionMonthlySnapshot[IsChurnedThisMonth] )
+
+Churn Rate =
+    // churned in the period / subscriptions alive at the start of the period
+    VAR FirstMonth =
+        CALCULATE ( MIN ( DimDate[FullDate] ), FactSubscriptionMonthlySnapshot )
+    VAR OpeningBase =
+        CALCULATE (
+            SUM ( FactSubscriptionMonthlySnapshot[ActiveSubscriptionCount] ),
+            DimDate[FullDate] = EOMONTH ( FirstMonth, -1 ),
+            REMOVEFILTERS ( DimDate )
+        )
+    RETURN
+        DIVIDE ( [Churned Subscriptions], OpeningBase )
+
+Trialing Subscriptions =
+    CALCULATE (
+        SUM ( FactSubscriptionMonthlySnapshot[IsTrialing] ),
+        LASTNONBLANK (
+            DimDate[FullDate],
+            CALCULATE ( COUNTROWS ( FactSubscriptionMonthlySnapshot ) )
+        )
+    )
+
+MRR PM =
+    CALCULATE ( [Monthly Recurring Revenue], DATEADD ( DimDate[FullDate], -1, MONTH ) )
+
+MRR Growth % =
+    DIVIDE ( [Monthly Recurring Revenue] - [MRR PM], [MRR PM] )
+
+
+// -----------------------------------------------------------------------------
+// Home table: FactTitleRating
+// -----------------------------------------------------------------------------
+Reviews =
+    SUM ( FactTitleRating[ReviewCount] )
+
+Average Rating =
+    AVERAGE ( FactTitleRating[RatingValue] )
+
+Share of Reviews with Text =
+    DIVIDE ( SUM ( FactTitleRating[HasTextFlag] ), [Reviews] )
+
+Flagged Review Rate =
+    DIVIDE ( SUM ( FactTitleRating[IsFlaggedFlag] ), [Reviews] )
+
+
+// -----------------------------------------------------------------------------
+// Home table: FactCatalogAvailabilitySnapshot
+// Semi-additive like the subscription snapshot.
+// -----------------------------------------------------------------------------
+Titles Available =
+    CALCULATE (
+        SUM ( FactCatalogAvailabilitySnapshot[TitlesAvailableCount] ),
+        LASTNONBLANK (
+            DimDate[FullDate],
+            CALCULATE ( COUNTROWS ( FactCatalogAvailabilitySnapshot ) )
+        )
+    )
+
+Titles Expiring Soon =
+    CALCULATE (
+        SUM ( FactCatalogAvailabilitySnapshot[IsExpiringSoon] ),
+        LASTNONBLANK (
+            DimDate[FullDate],
+            CALCULATE ( COUNTROWS ( FactCatalogAvailabilitySnapshot ) )
+        )
+    )
+
+Expiring Soon % =
+    DIVIDE ( [Titles Expiring Soon], [Titles Available] )
+
+Distinct Titles Available =
+    CALCULATE (
+        DISTINCTCOUNT ( FactCatalogAvailabilitySnapshot[TitleKey] ),
+        LASTNONBLANK (
+            DimDate[FullDate],
+            CALCULATE ( COUNTROWS ( FactCatalogAvailabilitySnapshot ) )
+        )
+    )

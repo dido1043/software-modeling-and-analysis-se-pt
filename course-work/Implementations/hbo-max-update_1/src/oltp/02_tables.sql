@@ -1,7 +1,7 @@
 /* =============================================================================
    HBO Max - Software Modeling and Analysis course work
    File:    02_tables.sql
-   Purpose: 27 OLTP tables in 3NF across five business schemas, matching the
+   Purpose: 27 OLTP tables in 3NF across five business schemas plus audit, matching the
             Crow's Foot logical model in docs/diagrams/02-logical-crowsfoot.drawio.
    Target:  Microsoft SQL Server 2019+
    Depends: 01_create_database.sql must have run first.
@@ -214,7 +214,7 @@ CREATE TABLE cat.TitleAvailability
     CONSTRAINT PK_TitleAvail           PRIMARY KEY (TitleID, CountryID),
     CONSTRAINT FK_TitleAvail_Title     FOREIGN KEY (TitleID)   REFERENCES cat.Title   (TitleID) ON DELETE CASCADE,
     CONSTRAINT FK_TitleAvail_Country   FOREIGN KEY (CountryID) REFERENCES geo.Country (CountryID),
-    CONSTRAINT CK_TitleAvail_License   CHECK (LicenseType IN ('Owned','Licensed','ExclusiveLicense','Expired')),
+    CONSTRAINT CK_TitleAvail_License   CHECK (LicenseType IN ('Owned','Licensed','Exclusive','Expired')),
     CONSTRAINT CK_TitleAvail_Dates     CHECK (AvailableUntil IS NULL OR AvailableUntil >= AvailableFrom)
 );
 GO
@@ -289,29 +289,10 @@ CREATE TABLE acct.Subscription
     CancellationReason   NVARCHAR(200)   NULL,
     CONSTRAINT PK_Subscription            PRIMARY KEY (SubscriptionID),
     CONSTRAINT FK_Sub_Subscriber          FOREIGN KEY (SubscriberID) REFERENCES acct.Subscriber (SubscriberID),
-    CONSTRAINT FK_Sub_Plan                FOREIGN KEY (PlanID)       REFERENCES acct.Plan       (PlanID),
+    CONSTRAINT FK_Sub_Plan                FOREIGN KEY (PlanID)       REFERENCES acct.[Plan]       (PlanID),
     CONSTRAINT CK_Sub_Status              CHECK (SubscriptionStatus IN ('Active','Trialing','Paused','Cancelled','Expired','PastDue')),
     CONSTRAINT CK_Sub_Cycle               CHECK (BillingCycle IN ('Monthly','Annual')),
     CONSTRAINT CK_Sub_Dates               CHECK (EndDate IS NULL OR EndDate >= StartDate)
-);
-GO
-
-CREATE TABLE acct.SubscriptionChangeLog
-(
-    ChangeLogID       BIGINT          IDENTITY(1,1) NOT NULL,
-    SubscriptionID    INT             NOT NULL,
-    ChangeType        VARCHAR(20)     NOT NULL,
-    OldPlanID         INT             NULL,
-    NewPlanID         INT             NULL,
-    OldStatus         VARCHAR(12)     NULL,
-    NewStatus         VARCHAR(12)     NULL,
-    ChangedAt         DATETIME2(0)    NOT NULL CONSTRAINT DF_SubChg_At DEFAULT (SYSUTCDATETIME()),
-    ChangedBy         NVARCHAR(128)   NOT NULL CONSTRAINT DF_SubChg_By DEFAULT (SUSER_SNAME()),
-    CONSTRAINT PK_SubChangeLog        PRIMARY KEY (ChangeLogID),
-    CONSTRAINT FK_SubChg_Sub          FOREIGN KEY (SubscriptionID) REFERENCES acct.Subscription (SubscriptionID),
-    CONSTRAINT FK_SubChg_OldPlan      FOREIGN KEY (OldPlanID)      REFERENCES acct.Plan (PlanID),
-    CONSTRAINT FK_SubChg_NewPlan      FOREIGN KEY (NewPlanID)      REFERENCES acct.Plan (PlanID),
-    CONSTRAINT CK_SubChg_Type         CHECK (ChangeType IN ('PlanUpgrade','PlanDowngrade','StatusChange','AutoRenewToggle','TrialStart','TrialEnd','Cancellation','Reactivation'))
 );
 GO
 
@@ -545,5 +526,28 @@ CREATE TABLE bill.SubscriptionCoupon
 );
 GO
 
-PRINT 'HBOMaxOLTP: 27 tables created (geo.1, acct.6, cat.11, play.4, bill.5).';
+/* =============================================================================
+   audit schema - append-only history written by triggers
+   ============================================================================= */
+
+CREATE TABLE audit.SubscriptionChangeLog
+(
+    ChangeLogID       BIGINT          IDENTITY(1,1) NOT NULL,
+    SubscriptionID    INT             NOT NULL,
+    ChangeType        VARCHAR(20)     NOT NULL,
+    OldPlanID         INT             NULL,
+    NewPlanID         INT             NULL,
+    OldStatus         VARCHAR(12)     NULL,
+    NewStatus         VARCHAR(12)     NULL,
+    ChangedAt         DATETIME2(0)    NOT NULL CONSTRAINT DF_SubChg_At DEFAULT (SYSUTCDATETIME()),
+    ChangedBy         NVARCHAR(128)   NOT NULL CONSTRAINT DF_SubChg_By DEFAULT (SUSER_SNAME()),
+    CONSTRAINT PK_SubChangeLog        PRIMARY KEY (ChangeLogID),
+    CONSTRAINT FK_SubChg_Sub          FOREIGN KEY (SubscriptionID) REFERENCES acct.Subscription (SubscriptionID),
+    CONSTRAINT FK_SubChg_OldPlan      FOREIGN KEY (OldPlanID)      REFERENCES acct.[Plan] (PlanID),
+    CONSTRAINT FK_SubChg_NewPlan      FOREIGN KEY (NewPlanID)      REFERENCES acct.[Plan] (PlanID),
+    CONSTRAINT CK_SubChg_Type         CHECK (ChangeType IN ('Created','PlanChange','StatusChange','PlanAndStatusChange','AutoRenewToggle'))
+);
+GO
+
+PRINT 'HBOMaxOLTP: 27 tables created (geo.1, acct.5, cat.11, play.4, bill.5, audit.1).';
 GO
