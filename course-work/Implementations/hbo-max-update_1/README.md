@@ -13,7 +13,7 @@ This project models HBO Max from start to finish:
 1. **Conceptual model** in Chen notation (18 entities, 24 relationships), and a **logical model** in Crow's Foot notation, with 27 entities and 229 attributes.
 2. **`HBOMaxOLTP`**: a 3NF SQL Server database covering accounts, plans, subscriptions, profiles and devices; the content catalogue (titles, seasons, episodes, genres, people, licensing); playback and engagement (watch sessions, watchlists, reviews, downloads); and billing (invoices, payments, coupons). It includes 7 stored procedures, 7 functions, 7 triggers, 4 views and generated demo data.
 3. **`HBOMaxDW`**: a Kimball data warehouse (fact constellation) with **5 fact tables and 10 dimensions**. SCD Type 2 is applied to subscriber geography and plan price. The warehouse is loaded by an audited, re-runnable, set-based T-SQL ETL, and seven analytic views sit on top of it.
-4. **Power BI report** with 5 pages and 12 visuals, built on the analytic views.
+4. **Power BI report** with 5 pages and 27 visuals, built on the analytic views and shipped as a Power BI project (`src/bi/HBOMax.pbip`).
 
 ## Course requirements: where each one is met
 
@@ -26,7 +26,7 @@ This project models HBO Max from start to finish:
 | 3 | ≥ 2 stored procedures, ≥ 2 functions, ≥ 2 triggers | `05_stored_procedures.sql` (**7**), `04_functions.sql` (**7**), `06_triggers.sql` (**7**) | ✅ |
 | 3 | Populate the database | `src/oltp/08_seed_data.sql` | ✅ |
 | 4 | Data Warehouse diagram (UML): ≥ 3 facts, ≥ 6 dimensions | [`docs/diagrams/03-dw-physical-uml.drawio`](docs/diagrams/03-dw-physical-uml.drawio): **5** facts, **10** dimensions; constellation page plus one star per fact | ✅ |
-| 5 | Power BI report, ≥ 4 visualizations | [`docs/POWER_BI_REPORT.md`](docs/POWER_BI_REPORT.md): 12 visuals on 5 pages; `report/HBOMax.pbix` | ⏳ to be built in Power BI Desktop |
+| 5 | Power BI report, ≥ 4 visualizations | [`src/bi/HBOMax.pbip`](src/bi/HBOMax.pbip): **27** visuals on 5 pages, over the 7 analytic views; guide in [`docs/POWER_BI_REPORT.md`](docs/POWER_BI_REPORT.md) | ✅ |
 | 6 | README with faculty number, name, description, install/run | this file | ⏳ fill in the faculty number(s) |
 
 **Beyond the requirements (extra credit):**
@@ -113,9 +113,11 @@ EXEC HBOMaxDW.etl.usp_RunFullLoad;              -- incremental facts, rebuilt sn
 EXEC HBOMaxDW.etl.usp_RunFullLoad @FullReload = 1;  -- ignore watermarks, rebuild everything
 ```
 
-### 3. Build the Power BI report
+### 3. Open the Power BI report
 
-Follow [`docs/POWER_BI_REPORT.md`](docs/POWER_BI_REPORT.md). It covers connecting to `HBOMaxDW`, loading the seven views, the field wells for each of the 12 visuals, and saving `report/HBOMax.pbix`.
+Double-click `src/bi/HBOMax.pbip`. Power BI Desktop opens the model and all five pages; click **Refresh now** in the yellow bar to pull the current data out of `HBOMaxDW`. A `.pbip` project stores the model and the report as text, never a copy of the data, so the report always shows what is in your warehouse today.
+
+If your instance is not `localhost\SQLEXPRESS`, set it once under **Home › Transform data › Edit parameters** — no query needs editing. [`docs/POWER_BI_REPORT.md`](docs/POWER_BI_REPORT.md) walks through the model, every page and the optional finishing touches.
 
 ### 4. Tools (optional)
 
@@ -133,16 +135,18 @@ python tools/generate_chen_diagram.py      # regenerate the conceptual (Chen) di
 src/
   oltp/   01–08   HBOMaxOLTP: schema, logic, seed data
   dw/     10–16   HBOMaxDW: dimensions, facts, ETL, views, load script
-  bi/             measures.dax: optional DAX measure library
+  bi/             HBOMax.pbip     open this with Power BI Desktop
+                  HBOMax.SemanticModel/  the model, as TMDL
+                  HBOMax.Report/         the report: 5 pages, 27 visuals
+                  measures.dax           optional DAX measure library
 docs/
   ARCHITECTURE.md       design and decisions
-  POWER_BI_REPORT.md    report build guide
+  POWER_BI_REPORT.md    report guide: how to open it, and what is on each page
   diagrams/             01 conceptual (Chen), 02 logical (Crow's Foot), 03 DW (UML), png/ exports
 tools/
   check_sql_consistency.py
   generate_diagrams.py
   generate_chen_diagram.py
-report/                 HBOMax.pbix and HBOMax.pdf (after you build the report)
 ```
 
 ## Submitting

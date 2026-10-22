@@ -1,0 +1,78 @@
+/// Genre x day part engagement. Page 1.
+table 'Genre Engagement'
+	lineageTag: 17ec6204-a968-7cd2-a808-673ff5191a7b
+
+	column GenreName
+		dataType: string
+		lineageTag: c4f2a26a-8670-9f4a-dd9a-93fa0eeaba3b
+		summarizeBy: none
+		sourceColumn: GenreName
+
+		annotation SummarizationSetBy = User
+
+	column DayPart
+		dataType: string
+		lineageTag: 9dc5d415-34d1-82ec-5936-edb8b8b83778
+		summarizeBy: none
+		sourceColumn: DayPart
+		sortByColumn: DayPartSortOrder
+
+		annotation SummarizationSetBy = User
+
+	column DayPartSortOrder
+		dataType: int64
+		isHidden
+		formatString: #,0
+		lineageTag: 1c1843c8-f3c4-ec6a-b008-d0c5b1b9aaad
+		summarizeBy: none
+		sourceColumn: DayPartSortOrder
+
+		annotation SummarizationSetBy = User
+
+	column HoursWatched
+		dataType: double
+		formatString: #,0.00
+		lineageTag: d1b11d3d-23a2-a79a-9a77-6df3de0d9f73
+		summarizeBy: sum
+		sourceColumn: HoursWatched
+
+		annotation SummarizationSetBy = User
+
+	column SessionCount
+		dataType: int64
+		formatString: #,0
+		lineageTag: aca00ea5-fb5a-6a88-f9f9-aad61c86c688
+		summarizeBy: sum
+		sourceColumn: SessionCount
+
+		annotation SummarizationSetBy = User
+
+	column AvgCompletionPct
+		dataType: double
+		formatString: #,0.00
+		lineageTag: 1b6344c9-0830-dadd-6fa9-84bb56d456e5
+		summarizeBy: average
+		sourceColumn: AvgCompletionPct
+
+		annotation SummarizationSetBy = User
+
+	column ShareOfGenreHoursPct
+		dataType: double
+		formatString: #,0.00
+		lineageTag: 24dc9bdd-0ddf-84e6-3412-87bf08ebc53a
+		summarizeBy: average
+		sourceColumn: ShareOfGenreHoursPct
+
+		annotation SummarizationSetBy = User
+
+	partition 'Genre Engagement' = m
+		mode: import
+		source =
+				let
+				    Source = Sql.Database(SqlServerInstance, SqlServerDatabase),
+				    dw_vw_GenreEngagementByDayPart = Source{[Schema="dw",Item="vw_GenreEngagementByDayPart"]}[Data]
+				in
+				    dw_vw_GenreEngagementByDayPart
+
+	annotation PBI_ResultType = Table
+

@@ -1,0 +1,65 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.2.0/schema.json",
+  "name": "cardFailureRate",
+  "position": {
+    "x": 1064,
+    "y": 16,
+    "z": 2000,
+    "width": 200,
+    "height": 104,
+    "tabOrder": 2000
+  },
+  "visual": {
+    "visualType": "card",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Aggregation": {
+                  "Expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "Revenue and MRR"
+                        }
+                      },
+                      "Property": "PaymentFailureRatePct"
+                    }
+                  },
+                  "Function": 1
+                }
+              },
+              "queryRef": "Average(Revenue and MRR.PaymentFailureRatePct)",
+              "nativeQueryRef": "Average of PaymentFailureRatePct"
+            }
+          ]
+        }
+      }
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Payment failure rate %'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

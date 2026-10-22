@@ -1,0 +1,12 @@
+/// SQL Server instance that holds HBOMaxDW.
+expression SqlServerInstance = "localhost\SQLEXPRESS" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
+	lineageTag: a7d66bae-abc8-afb2-a53f-95ca7b3d2ca0
+
+	annotation PBI_ResultType = Text
+
+/// Name of the data warehouse database.
+expression SqlServerDatabase = "HBOMaxDW" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
+	lineageTag: 9f763f39-be07-a649-cf81-3f6e222fbfef
+
+	annotation PBI_ResultType = Text
+

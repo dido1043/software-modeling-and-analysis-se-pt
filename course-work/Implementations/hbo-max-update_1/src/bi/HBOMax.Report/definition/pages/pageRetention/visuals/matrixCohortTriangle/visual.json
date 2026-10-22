@@ -1,0 +1,103 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.2.0/schema.json",
+  "name": "matrixCohortTriangle",
+  "position": {
+    "x": 16,
+    "y": 16,
+    "z": 0,
+    "width": 824,
+    "height": 420,
+    "tabOrder": 0
+  },
+  "visual": {
+    "visualType": "pivotTable",
+    "query": {
+      "queryState": {
+        "Rows": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Cohort Retention"
+                    }
+                  },
+                  "Property": "CohortLabel"
+                }
+              },
+              "queryRef": "Cohort Retention.CohortLabel",
+              "nativeQueryRef": "CohortLabel",
+              "active": true
+            }
+          ]
+        },
+        "Columns": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Cohort Retention"
+                    }
+                  },
+                  "Property": "MonthsSinceSignup"
+                }
+              },
+              "queryRef": "Cohort Retention.MonthsSinceSignup",
+              "nativeQueryRef": "MonthsSinceSignup",
+              "active": true
+            }
+          ]
+        },
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Aggregation": {
+                  "Expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "Cohort Retention"
+                        }
+                      },
+                      "Property": "RetentionVsCohortStartPct"
+                    }
+                  },
+                  "Function": 0
+                }
+              },
+              "queryRef": "Sum(Cohort Retention.RetentionVsCohortStartPct)",
+              "nativeQueryRef": "Sum of RetentionVsCohortStartPct"
+            }
+          ]
+        }
+      }
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Retention against cohort start (%), by months since signup'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

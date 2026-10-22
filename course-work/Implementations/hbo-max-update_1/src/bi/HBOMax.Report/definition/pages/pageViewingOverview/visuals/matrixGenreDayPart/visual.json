@@ -1,0 +1,103 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.2.0/schema.json",
+  "name": "matrixGenreDayPart",
+  "position": {
+    "x": 16,
+    "y": 424,
+    "z": 7000,
+    "width": 752,
+    "height": 280,
+    "tabOrder": 7000
+  },
+  "visual": {
+    "visualType": "pivotTable",
+    "query": {
+      "queryState": {
+        "Rows": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Genre Engagement"
+                    }
+                  },
+                  "Property": "GenreName"
+                }
+              },
+              "queryRef": "Genre Engagement.GenreName",
+              "nativeQueryRef": "GenreName",
+              "active": true
+            }
+          ]
+        },
+        "Columns": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Genre Engagement"
+                    }
+                  },
+                  "Property": "DayPart"
+                }
+              },
+              "queryRef": "Genre Engagement.DayPart",
+              "nativeQueryRef": "DayPart",
+              "active": true
+            }
+          ]
+        },
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Aggregation": {
+                  "Expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "Genre Engagement"
+                        }
+                      },
+                      "Property": "HoursWatched"
+                    }
+                  },
+                  "Function": 0
+                }
+              },
+              "queryRef": "Sum(Genre Engagement.HoursWatched)",
+              "nativeQueryRef": "Sum of HoursWatched"
+            }
+          ]
+        }
+      }
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Hours watched by genre and day part'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

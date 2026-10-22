@@ -1,0 +1,198 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.2.0/schema.json",
+  "name": "tableTitleDetail",
+  "position": {
+    "x": 656,
+    "y": 16,
+    "z": 1000,
+    "width": 608,
+    "height": 440,
+    "tabOrder": 1000
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Top Titles"
+                    }
+                  },
+                  "Property": "TitleName"
+                }
+              },
+              "queryRef": "Top Titles.TitleName",
+              "nativeQueryRef": "TitleName"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Top Titles"
+                    }
+                  },
+                  "Property": "PrimaryGenre"
+                }
+              },
+              "queryRef": "Top Titles.PrimaryGenre",
+              "nativeQueryRef": "PrimaryGenre"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Top Titles"
+                    }
+                  },
+                  "Property": "ContentSource"
+                }
+              },
+              "queryRef": "Top Titles.ContentSource",
+              "nativeQueryRef": "ContentSource"
+            },
+            {
+              "field": {
+                "Aggregation": {
+                  "Expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "Top Titles"
+                        }
+                      },
+                      "Property": "UniqueViewers"
+                    }
+                  },
+                  "Function": 0
+                }
+              },
+              "queryRef": "Sum(Top Titles.UniqueViewers)",
+              "nativeQueryRef": "Sum of UniqueViewers"
+            },
+            {
+              "field": {
+                "Aggregation": {
+                  "Expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "Top Titles"
+                        }
+                      },
+                      "Property": "CompletionRatePct"
+                    }
+                  },
+                  "Function": 1
+                }
+              },
+              "queryRef": "Average(Top Titles.CompletionRatePct)",
+              "nativeQueryRef": "Average of CompletionRatePct"
+            },
+            {
+              "field": {
+                "Aggregation": {
+                  "Expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "Top Titles"
+                        }
+                      },
+                      "Property": "AvgRating"
+                    }
+                  },
+                  "Function": 1
+                }
+              },
+              "queryRef": "Average(Top Titles.AvgRating)",
+              "nativeQueryRef": "Average of AvgRating"
+            }
+          ]
+        }
+      }
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Top 20 titles: completion and rating'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "filterTopTitlesTable",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Top Titles"
+              }
+            },
+            "Property": "HoursRank"
+          }
+        },
+        "type": "Advanced",
+        "filter": {
+          "Version": 2,
+          "From": [
+            {
+              "Name": "t",
+              "Entity": "Top Titles",
+              "Type": 0
+            }
+          ],
+          "Where": [
+            {
+              "Condition": {
+                "Comparison": {
+                  "ComparisonKind": 4,
+                  "Left": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Source": "t"
+                        }
+                      },
+                      "Property": "HoursRank"
+                    }
+                  },
+                  "Right": {
+                    "Literal": {
+                      "Value": "20L"
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "howCreated": "User"
+      }
+    ]
+  }
+}

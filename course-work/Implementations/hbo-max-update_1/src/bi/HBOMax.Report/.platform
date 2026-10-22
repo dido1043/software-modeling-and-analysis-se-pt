@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "Report",
+    "displayName": "HBOMax"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "e98d2f00-1da5-678b-3948-2efbdf5770dc"
+  }
+}

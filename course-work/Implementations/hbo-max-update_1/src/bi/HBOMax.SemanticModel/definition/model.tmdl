@@ -1,0 +1,22 @@
+model Model
+	culture: en-US
+	defaultPowerBIDataSourceVersion: powerBI_V3
+	sourceQueryCulture: en-US
+	dataAccessOptions
+		legacyRedirects
+		returnErrorValuesAsNull
+
+annotation __PBI_TimeIntelligenceEnabled = 0
+
+annotation PBI_QueryOrder = ["SqlServerInstance","SqlServerDatabase","Viewing Trend","Top Titles","Revenue and MRR","Cohort Retention","Genre Engagement","Device Mix","Originals vs Licensed"]
+
+annotation PBI_ProTooling = ["DevMode"]
+
+ref table 'Viewing Trend'
+ref table 'Top Titles'
+ref table 'Revenue and MRR'
+ref table 'Cohort Retention'
+ref table 'Genre Engagement'
+ref table 'Device Mix'
+ref table 'Originals vs Licensed'
+

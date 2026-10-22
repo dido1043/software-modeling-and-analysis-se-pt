@@ -1,0 +1,125 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.2.0/schema.json",
+  "name": "columnOriginalsVsLicensed",
+  "position": {
+    "x": 16,
+    "y": 472,
+    "z": 2000,
+    "width": 624,
+    "height": 232,
+    "tabOrder": 2000
+  },
+  "visual": {
+    "visualType": "clusteredColumnChart",
+    "query": {
+      "queryState": {
+        "Category": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Originals vs Licensed"
+                    }
+                  },
+                  "Property": "ContentSource"
+                }
+              },
+              "queryRef": "Originals vs Licensed.ContentSource",
+              "nativeQueryRef": "ContentSource",
+              "active": true
+            }
+          ]
+        },
+        "Y": {
+          "projections": [
+            {
+              "field": {
+                "Aggregation": {
+                  "Expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "Originals vs Licensed"
+                        }
+                      },
+                      "Property": "ShareOfHoursPct"
+                    }
+                  },
+                  "Function": 0
+                }
+              },
+              "queryRef": "Sum(Originals vs Licensed.ShareOfHoursPct)",
+              "nativeQueryRef": "Sum of ShareOfHoursPct"
+            },
+            {
+              "field": {
+                "Aggregation": {
+                  "Expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "Originals vs Licensed"
+                        }
+                      },
+                      "Property": "CatalogueSharePct"
+                    }
+                  },
+                  "Function": 0
+                }
+              },
+              "queryRef": "Sum(Originals vs Licensed.CatalogueSharePct)",
+              "nativeQueryRef": "Sum of CatalogueSharePct"
+            }
+          ]
+        }
+      }
+    },
+    "objects": {
+      "legend": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "position": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Bottom'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Share of hours watched against share of catalogue (%)'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

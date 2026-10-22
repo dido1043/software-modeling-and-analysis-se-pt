@@ -1,0 +1,101 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
+  "name": "lineChurnRate",
+  "position": {
+    "x": 856,
+    "y": 16,
+    "z": 1000,
+    "height": 420,
+    "width": 408,
+    "tabOrder": 1000
+  },
+  "visual": {
+    "visualType": "lineChart",
+    "query": {
+      "queryState": {
+        "Category": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Cohort Retention"
+                    }
+                  },
+                  "Property": "ActivityMonthLabel"
+                }
+              },
+              "queryRef": "Cohort Retention.ActivityMonthLabel",
+              "nativeQueryRef": "ActivityMonthLabel",
+              "active": true
+            }
+          ]
+        },
+        "Y": {
+          "projections": [
+            {
+              "field": {
+                "Aggregation": {
+                  "Expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "Cohort Retention"
+                        }
+                      },
+                      "Property": "ChurnRatePct"
+                    }
+                  },
+                  "Function": 1
+                }
+              },
+              "queryRef": "Average(Cohort Retention.ChurnRatePct)",
+              "nativeQueryRef": "Average of ChurnRatePct"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "Cohort Retention"
+                  }
+                },
+                "Property": "ActivityMonthKey"
+              }
+            },
+            "direction": "Ascending"
+          }
+        ]
+      }
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Churn rate % by activity month'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

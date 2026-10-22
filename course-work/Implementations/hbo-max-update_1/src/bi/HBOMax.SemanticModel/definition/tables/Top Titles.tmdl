@@ -1,0 +1,139 @@
+/// One row per watched title, ranked by hours. Page 2.
+table 'Top Titles'
+	lineageTag: 290f1f7f-4af3-657d-a674-9f72163be86e
+
+	column TitleKey
+		dataType: int64
+		isHidden
+		formatString: #,0
+		lineageTag: c707358b-73f2-5e55-295a-77e3dfe9b81f
+		summarizeBy: none
+		sourceColumn: TitleKey
+
+		annotation SummarizationSetBy = User
+
+	column TitleID
+		dataType: int64
+		isHidden
+		formatString: #,0
+		lineageTag: 51806120-00d6-f599-f5ce-a1ab2ff0f3b0
+		summarizeBy: none
+		sourceColumn: TitleID
+
+		annotation SummarizationSetBy = User
+
+	column TitleName
+		dataType: string
+		lineageTag: f52a72dd-df6e-fe8e-320e-9697fb0b9840
+		summarizeBy: none
+		sourceColumn: TitleName
+
+		annotation SummarizationSetBy = User
+
+	column TitleType
+		dataType: string
+		lineageTag: 0822033d-4a46-8179-c0e8-7e33d5446c3a
+		summarizeBy: none
+		sourceColumn: TitleType
+
+		annotation SummarizationSetBy = User
+
+	column PrimaryGenre
+		dataType: string
+		lineageTag: 931bc970-3a1a-8881-bf56-0704fd629418
+		summarizeBy: none
+		sourceColumn: PrimaryGenre
+
+		annotation SummarizationSetBy = User
+
+	column ContentSource
+		dataType: string
+		lineageTag: 34503325-9b63-c0d0-de1d-9fd4add23ca9
+		summarizeBy: none
+		sourceColumn: ContentSource
+
+		annotation SummarizationSetBy = User
+
+	column ReleaseYear
+		dataType: int64
+		formatString: #,0
+		lineageTag: cc4c9aab-9410-fe4d-6c8d-5beb007cb244
+		summarizeBy: none
+		sourceColumn: ReleaseYear
+
+		annotation SummarizationSetBy = User
+
+	column HoursWatched
+		dataType: double
+		formatString: #,0.00
+		lineageTag: 9fc93cbe-6539-4981-10b7-823387ba2c1a
+		summarizeBy: sum
+		sourceColumn: HoursWatched
+
+		annotation SummarizationSetBy = User
+
+	column SessionCount
+		dataType: int64
+		formatString: #,0
+		lineageTag: 05862285-55ea-e769-4675-222e500500f6
+		summarizeBy: sum
+		sourceColumn: SessionCount
+
+		annotation SummarizationSetBy = User
+
+	column UniqueViewers
+		dataType: int64
+		formatString: #,0
+		lineageTag: a721b68e-f515-8495-824f-f8bc097a91a8
+		summarizeBy: sum
+		sourceColumn: UniqueViewers
+
+		annotation SummarizationSetBy = User
+
+	column CompletionRatePct
+		dataType: double
+		formatString: #,0.00
+		lineageTag: 62c192ba-e8e7-590a-12bc-96cd029f804a
+		summarizeBy: average
+		sourceColumn: CompletionRatePct
+
+		annotation SummarizationSetBy = User
+
+	column AvgRating
+		dataType: double
+		formatString: #,0.00
+		lineageTag: fcf3f4af-e7d7-9b11-e413-6504f9052d0c
+		summarizeBy: average
+		sourceColumn: AvgRating
+
+		annotation SummarizationSetBy = User
+
+	column ReviewCount
+		dataType: int64
+		formatString: #,0
+		lineageTag: 3a76ee03-8e5c-f77d-6a26-9f2168c8377e
+		summarizeBy: sum
+		sourceColumn: ReviewCount
+
+		annotation SummarizationSetBy = User
+
+	column HoursRank
+		dataType: int64
+		formatString: #,0
+		lineageTag: 6afd5ec3-4718-a5c0-72df-971e0f8c08de
+		summarizeBy: none
+		sourceColumn: HoursRank
+
+		annotation SummarizationSetBy = User
+
+	partition 'Top Titles' = m
+		mode: import
+		source =
+				let
+				    Source = Sql.Database(SqlServerInstance, SqlServerDatabase),
+				    dw_vw_TopTitlesByHoursWatched = Source{[Schema="dw",Item="vw_TopTitlesByHoursWatched"]}[Data]
+				in
+				    dw_vw_TopTitlesByHoursWatched
+
+	annotation PBI_ResultType = Table
+

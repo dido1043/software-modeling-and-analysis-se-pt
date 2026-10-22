@@ -1,0 +1,125 @@
+/// Signup cohort x activity month retention triangle. Page 4.
+table 'Cohort Retention'
+	lineageTag: 8b5694dd-78f7-30a7-7fe9-68c254f28f87
+
+	column CohortMonthKey
+		dataType: int64
+		isHidden
+		formatString: #,0
+		lineageTag: bc6c0597-12d3-2036-24e2-bc135a4bb269
+		summarizeBy: none
+		sourceColumn: CohortMonthKey
+
+		annotation SummarizationSetBy = User
+
+	column CohortLabel
+		dataType: string
+		lineageTag: fc0de8c9-de77-a428-f486-7b1903d657be
+		summarizeBy: none
+		sourceColumn: CohortLabel
+		sortByColumn: CohortMonthKey
+
+		annotation SummarizationSetBy = User
+
+	column ActivityMonthKey
+		dataType: int64
+		isHidden
+		formatString: #,0
+		lineageTag: a3b96982-20c5-5849-4445-7ddc0ed7b5cb
+		summarizeBy: none
+		sourceColumn: ActivityMonthKey
+
+		annotation SummarizationSetBy = User
+
+	column ActivityMonthLabel
+		dataType: string
+		lineageTag: 9b882643-46df-7966-48d3-9b4429c7a76d
+		summarizeBy: none
+		sourceColumn: ActivityMonthLabel
+		sortByColumn: ActivityMonthKey
+
+		annotation SummarizationSetBy = User
+
+	column MonthsSinceSignup
+		dataType: int64
+		formatString: #,0
+		lineageTag: 5935a6f0-00ba-91de-6c75-64fa7d29e79e
+		summarizeBy: none
+		sourceColumn: MonthsSinceSignup
+
+		annotation SummarizationSetBy = User
+
+	column CohortSize
+		dataType: int64
+		formatString: #,0
+		lineageTag: 8b3ef0b0-bd71-9b07-e6ce-55973c701480
+		summarizeBy: sum
+		sourceColumn: CohortSize
+
+		annotation SummarizationSetBy = User
+
+	column SubscriptionsObserved
+		dataType: int64
+		formatString: #,0
+		lineageTag: dcba94d7-c84b-daf5-21aa-d55c19a753be
+		summarizeBy: sum
+		sourceColumn: SubscriptionsObserved
+
+		annotation SummarizationSetBy = User
+
+	column SubscriptionsActive
+		dataType: int64
+		formatString: #,0
+		lineageTag: 8f8f66ca-5388-9578-2b32-14d9d585dc95
+		summarizeBy: sum
+		sourceColumn: SubscriptionsActive
+
+		annotation SummarizationSetBy = User
+
+	column SubscriptionsTrialing
+		dataType: int64
+		formatString: #,0
+		lineageTag: b6d45742-c284-2d83-7e84-0e8fc0229dee
+		summarizeBy: sum
+		sourceColumn: SubscriptionsTrialing
+
+		annotation SummarizationSetBy = User
+
+	column SubscribersChurned
+		dataType: int64
+		formatString: #,0
+		lineageTag: daf822e5-d0c2-a131-d0f1-0b8e1f864315
+		summarizeBy: sum
+		sourceColumn: SubscribersChurned
+
+		annotation SummarizationSetBy = User
+
+	column ChurnRatePct
+		dataType: double
+		formatString: #,0.00
+		lineageTag: 6ca86897-fe89-7e64-e4ce-79dc0850201e
+		summarizeBy: average
+		sourceColumn: ChurnRatePct
+
+		annotation SummarizationSetBy = User
+
+	column RetentionVsCohortStartPct
+		dataType: double
+		formatString: #,0.00
+		lineageTag: 50467fdf-863b-2d99-38d8-15a4cfd1cd55
+		summarizeBy: sum
+		sourceColumn: RetentionVsCohortStartPct
+
+		annotation SummarizationSetBy = User
+
+	partition 'Cohort Retention' = m
+		mode: import
+		source =
+				let
+				    Source = Sql.Database(SqlServerInstance, SqlServerDatabase),
+				    dw_vw_ChurnByCohort = Source{[Schema="dw",Item="vw_ChurnByCohort"]}[Data]
+				in
+				    dw_vw_ChurnByCohort
+
+	annotation PBI_ResultType = Table
+

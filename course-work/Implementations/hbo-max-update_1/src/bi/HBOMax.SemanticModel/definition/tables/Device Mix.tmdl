@@ -1,0 +1,85 @@
+/// Region x form factor device mix and streaming quality. Page 5.
+table 'Device Mix'
+	lineageTag: 581a0f49-c5b2-00f6-863c-7aa8e326a34e
+
+	column RegionName
+		dataType: string
+		lineageTag: 47ba72dc-1d26-2bf0-9587-758f071f257b
+		summarizeBy: none
+		sourceColumn: RegionName
+
+		annotation SummarizationSetBy = User
+
+	column FormFactor
+		dataType: string
+		lineageTag: 1f93083f-8c9a-b936-9e50-1132b66e5a00
+		summarizeBy: none
+		sourceColumn: FormFactor
+
+		annotation SummarizationSetBy = User
+
+	column HoursWatched
+		dataType: double
+		formatString: #,0.00
+		lineageTag: 7dbe58ee-94db-5e3d-aa88-85fe4f559299
+		summarizeBy: sum
+		sourceColumn: HoursWatched
+
+		annotation SummarizationSetBy = User
+
+	column SessionCount
+		dataType: int64
+		formatString: #,0
+		lineageTag: ffee1692-d84f-5bbc-457a-d810d4ea60f6
+		summarizeBy: sum
+		sourceColumn: SessionCount
+
+		annotation SummarizationSetBy = User
+
+	column DeviceCount
+		dataType: int64
+		formatString: #,0
+		lineageTag: 95e39aa2-5cc6-c94d-cdf9-f35a0e922d11
+		summarizeBy: sum
+		sourceColumn: DeviceCount
+
+		annotation SummarizationSetBy = User
+
+	column BufferingEvents
+		dataType: int64
+		formatString: #,0
+		lineageTag: e40d3b7f-b2cc-4157-28e3-18c989426757
+		summarizeBy: sum
+		sourceColumn: BufferingEvents
+
+		annotation SummarizationSetBy = User
+
+	column BufferingEventsPerHour
+		dataType: double
+		formatString: #,0.00
+		lineageTag: 5f6e6aaf-3401-fc17-2a12-d1a4a3f9292f
+		summarizeBy: average
+		sourceColumn: BufferingEventsPerHour
+
+		annotation SummarizationSetBy = User
+
+	column ShareOfRegionHoursPct
+		dataType: double
+		formatString: #,0.00
+		lineageTag: 10826809-717c-78df-9feb-39b8270f3d2d
+		summarizeBy: average
+		sourceColumn: ShareOfRegionHoursPct
+
+		annotation SummarizationSetBy = User
+
+	partition 'Device Mix' = m
+		mode: import
+		source =
+				let
+				    Source = Sql.Database(SqlServerInstance, SqlServerDatabase),
+				    dw_vw_DeviceMixByRegion = Source{[Schema="dw",Item="vw_DeviceMixByRegion"]}[Data]
+				in
+				    dw_vw_DeviceMixByRegion
+
+	annotation PBI_ResultType = Table
+

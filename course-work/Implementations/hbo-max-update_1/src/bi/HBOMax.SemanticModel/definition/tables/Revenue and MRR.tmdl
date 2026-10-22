@@ -1,0 +1,176 @@
+/// Month x plan revenue, MRR and ARPU. Page 3.
+table 'Revenue and MRR'
+	lineageTag: 340de83a-a823-c06d-cac0-537085c696a1
+
+	column MonthKey
+		dataType: int64
+		isHidden
+		formatString: #,0
+		lineageTag: b1651bfa-66b0-59fe-8f49-12823300611b
+		summarizeBy: none
+		sourceColumn: MonthKey
+
+		annotation SummarizationSetBy = User
+
+	column MonthLabel
+		dataType: string
+		lineageTag: 4c2f6fa0-0196-add1-f5ac-67daf4523017
+		summarizeBy: none
+		sourceColumn: MonthLabel
+		sortByColumn: MonthKey
+
+		annotation SummarizationSetBy = User
+
+	column CalendarYear
+		dataType: int64
+		formatString: #,0
+		lineageTag: 28500ad0-6734-ff14-5621-1b2624a77785
+		summarizeBy: none
+		sourceColumn: CalendarYear
+
+		annotation SummarizationSetBy = User
+
+	column PlanID
+		dataType: int64
+		isHidden
+		formatString: #,0
+		lineageTag: cae5a6cc-4a46-e2c0-be37-a046d79e21c7
+		summarizeBy: none
+		sourceColumn: PlanID
+
+		annotation SummarizationSetBy = User
+
+	column PlanCode
+		dataType: string
+		lineageTag: 45a22e09-b15a-5887-29b4-b705127450fb
+		summarizeBy: none
+		sourceColumn: PlanCode
+
+		annotation SummarizationSetBy = User
+
+	column PlanName
+		dataType: string
+		lineageTag: c1ca8f93-8b55-3ab8-6a07-dfb97eddfb67
+		summarizeBy: none
+		sourceColumn: PlanName
+
+		annotation SummarizationSetBy = User
+
+	column CurrencyCode
+		dataType: string
+		lineageTag: d1213b7a-a23f-1479-b8a7-2a009dee28d3
+		summarizeBy: none
+		sourceColumn: CurrencyCode
+
+		annotation SummarizationSetBy = User
+
+	column RecognisedRevenue
+		dataType: double
+		formatString: #,0.00
+		lineageTag: cf0a4d6a-e955-7f15-2f53-4f88cff839b0
+		summarizeBy: sum
+		sourceColumn: RecognisedRevenue
+
+		annotation SummarizationSetBy = User
+
+	column DiscountAmount
+		dataType: double
+		formatString: #,0.00
+		lineageTag: eea5159a-b5f6-9db9-21a5-142ae9da0b24
+		summarizeBy: sum
+		sourceColumn: DiscountAmount
+
+		annotation SummarizationSetBy = User
+
+	column TaxAmount
+		dataType: double
+		formatString: #,0.00
+		lineageTag: 0c6eb03b-4423-155f-e536-0658d2b0006d
+		summarizeBy: sum
+		sourceColumn: TaxAmount
+
+		annotation SummarizationSetBy = User
+
+	column Mrr
+		dataType: double
+		formatString: #,0.00
+		lineageTag: 12626846-0914-51c1-7f26-c3f914110159
+		summarizeBy: sum
+		sourceColumn: Mrr
+
+		annotation SummarizationSetBy = User
+
+	column ActiveSubscriptions
+		dataType: int64
+		formatString: #,0
+		lineageTag: 07304ede-f97e-8ced-85f2-a8d800c3a466
+		summarizeBy: sum
+		sourceColumn: ActiveSubscriptions
+
+		annotation SummarizationSetBy = User
+
+	column NewSubscriptions
+		dataType: int64
+		formatString: #,0
+		lineageTag: 8da0cca6-cb6c-a387-6ae3-eb9ae1ae0933
+		summarizeBy: sum
+		sourceColumn: NewSubscriptions
+
+		annotation SummarizationSetBy = User
+
+	column ChurnedSubscriptions
+		dataType: int64
+		formatString: #,0
+		lineageTag: 3319f16d-77f6-f073-bb0b-96c132e1ecaa
+		summarizeBy: sum
+		sourceColumn: ChurnedSubscriptions
+
+		annotation SummarizationSetBy = User
+
+	column ArpuRecognised
+		dataType: double
+		formatString: #,0.00
+		lineageTag: 0d2595ec-cb12-3b37-3221-f4ff15ee8012
+		summarizeBy: average
+		sourceColumn: ArpuRecognised
+
+		annotation SummarizationSetBy = User
+
+	column PaymentCount
+		dataType: int64
+		formatString: #,0
+		lineageTag: a937e04e-d7f2-b308-6804-a5b7be343f77
+		summarizeBy: sum
+		sourceColumn: PaymentCount
+
+		annotation SummarizationSetBy = User
+
+	column FailedPaymentCount
+		dataType: int64
+		formatString: #,0
+		lineageTag: 56832628-f9a2-f2d2-e9a1-f187e875fa82
+		summarizeBy: sum
+		sourceColumn: FailedPaymentCount
+
+		annotation SummarizationSetBy = User
+
+	column PaymentFailureRatePct
+		dataType: double
+		formatString: #,0.00
+		lineageTag: 00ebff5d-d76f-da18-b478-c46551383963
+		summarizeBy: average
+		sourceColumn: PaymentFailureRatePct
+
+		annotation SummarizationSetBy = User
+
+	partition 'Revenue and MRR' = m
+		mode: import
+		source =
+				let
+				    Source = Sql.Database(SqlServerInstance, SqlServerDatabase),
+				    dw_vw_RevenueAndMrrByPlan = Source{[Schema="dw",Item="vw_RevenueAndMrrByPlan"]}[Data]
+				in
+				    dw_vw_RevenueAndMrrByPlan
+
+	annotation PBI_ResultType = Table
+

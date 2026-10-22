@@ -1,0 +1,150 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.2.0/schema.json",
+  "name": "tableDeviceDetail",
+  "position": {
+    "x": 432,
+    "y": 368,
+    "z": 3000,
+    "width": 832,
+    "height": 336,
+    "tabOrder": 3000
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Device Mix"
+                    }
+                  },
+                  "Property": "RegionName"
+                }
+              },
+              "queryRef": "Device Mix.RegionName",
+              "nativeQueryRef": "RegionName"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Device Mix"
+                    }
+                  },
+                  "Property": "FormFactor"
+                }
+              },
+              "queryRef": "Device Mix.FormFactor",
+              "nativeQueryRef": "FormFactor"
+            },
+            {
+              "field": {
+                "Aggregation": {
+                  "Expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "Device Mix"
+                        }
+                      },
+                      "Property": "DeviceCount"
+                    }
+                  },
+                  "Function": 0
+                }
+              },
+              "queryRef": "Sum(Device Mix.DeviceCount)",
+              "nativeQueryRef": "Sum of DeviceCount"
+            },
+            {
+              "field": {
+                "Aggregation": {
+                  "Expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "Device Mix"
+                        }
+                      },
+                      "Property": "SessionCount"
+                    }
+                  },
+                  "Function": 0
+                }
+              },
+              "queryRef": "Sum(Device Mix.SessionCount)",
+              "nativeQueryRef": "Sum of SessionCount"
+            },
+            {
+              "field": {
+                "Aggregation": {
+                  "Expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "Device Mix"
+                        }
+                      },
+                      "Property": "HoursWatched"
+                    }
+                  },
+                  "Function": 0
+                }
+              },
+              "queryRef": "Sum(Device Mix.HoursWatched)",
+              "nativeQueryRef": "Sum of HoursWatched"
+            },
+            {
+              "field": {
+                "Aggregation": {
+                  "Expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "Device Mix"
+                        }
+                      },
+                      "Property": "BufferingEventsPerHour"
+                    }
+                  },
+                  "Function": 1
+                }
+              },
+              "queryRef": "Average(Device Mix.BufferingEventsPerHour)",
+              "nativeQueryRef": "Average of BufferingEventsPerHour"
+            }
+          ]
+        }
+      }
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Devices, sessions and quality by region'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

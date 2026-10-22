@@ -1,0 +1,104 @@
+/// Originals against licensed content. Page 2.
+table 'Originals vs Licensed'
+	lineageTag: c76b165d-f91f-5ed4-6e5c-ffb70ee8343a
+
+	column ContentSource
+		dataType: string
+		lineageTag: 40068273-475c-f26e-3089-200a74e50bb3
+		summarizeBy: none
+		sourceColumn: ContentSource
+
+		annotation SummarizationSetBy = User
+
+	column CatalogueTitles
+		dataType: int64
+		formatString: #,0
+		lineageTag: 2d22bc2e-11e1-e4cc-5087-62bcebdfbaa2
+		summarizeBy: sum
+		sourceColumn: CatalogueTitles
+
+		annotation SummarizationSetBy = User
+
+	column TitlesWatched
+		dataType: int64
+		formatString: #,0
+		lineageTag: 3328cd8e-461e-ea11-a126-09441baa11c6
+		summarizeBy: sum
+		sourceColumn: TitlesWatched
+
+		annotation SummarizationSetBy = User
+
+	column HoursWatched
+		dataType: double
+		formatString: #,0.00
+		lineageTag: c9c55e43-1b81-e886-408e-4ac763fa6472
+		summarizeBy: sum
+		sourceColumn: HoursWatched
+
+		annotation SummarizationSetBy = User
+
+	column SessionCount
+		dataType: int64
+		formatString: #,0
+		lineageTag: f25a959c-16df-7a54-273b-b5c788f38af4
+		summarizeBy: sum
+		sourceColumn: SessionCount
+
+		annotation SummarizationSetBy = User
+
+	column HoursPerCatalogueTitle
+		dataType: double
+		formatString: #,0.00
+		lineageTag: 81448011-9cb2-30fc-22dc-416dc031a80a
+		summarizeBy: average
+		sourceColumn: HoursPerCatalogueTitle
+
+		annotation SummarizationSetBy = User
+
+	column CompletionRatePct
+		dataType: double
+		formatString: #,0.00
+		lineageTag: 802a08f0-13cc-0bca-300b-f1340e628235
+		summarizeBy: average
+		sourceColumn: CompletionRatePct
+
+		annotation SummarizationSetBy = User
+
+	column AvgRating
+		dataType: double
+		formatString: #,0.00
+		lineageTag: 15a5b51c-9439-c1c1-e3f5-1be4e91c93a6
+		summarizeBy: average
+		sourceColumn: AvgRating
+
+		annotation SummarizationSetBy = User
+
+	column ShareOfHoursPct
+		dataType: double
+		formatString: #,0.00
+		lineageTag: 638a892f-d446-3a78-844b-145e05bfd642
+		summarizeBy: average
+		sourceColumn: ShareOfHoursPct
+
+		annotation SummarizationSetBy = User
+
+	column CatalogueSharePct
+		dataType: double
+		formatString: #,0.00
+		lineageTag: 57aed8e6-2330-d6ef-8284-123bf96d4e08
+		summarizeBy: average
+		sourceColumn: CatalogueSharePct
+
+		annotation SummarizationSetBy = User
+
+	partition 'Originals vs Licensed' = m
+		mode: import
+		source =
+				let
+				    Source = Sql.Database(SqlServerInstance, SqlServerDatabase),
+				    dw_vw_OriginalsVsLicensedPerformance = Source{[Schema="dw",Item="vw_OriginalsVsLicensedPerformance"]}[Data]
+				in
+				    dw_vw_OriginalsVsLicensedPerformance
+
+	annotation PBI_ResultType = Table
+
